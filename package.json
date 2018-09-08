@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/Trubasa/vueAdminTrubasaServer/issues"
   },
-  "homepage": "https://github.com/Trubasa/vueAdminTrubasaServer#readme"
+  "homepage": "https://github.com/Trubasa/vueAdminTrubasaServer#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3"
+  }
 }
