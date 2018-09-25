@@ -9,6 +9,15 @@ const serverConfig=require(path.resolve('./config/serverConfig.js'));
 let api=require(path.resolve('./api/index.js'));
 let app=express();
 
+let router=express.Router();
+//全局处理
+router.use(function timeLog (req, res, next) {
+    console.log('Time: ', Date.now())
+    next()
+})
+app.use('*',router);
+
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
@@ -28,16 +37,19 @@ app.use(session({
     console.log('get *');
 })*/
 
+
 app.get('/server',function (req,res) {
     console.log('get server');
     if(req.session.userName){  //判断session 状态，如果有效，则返回主页，否则转到登录页面
         /*res.render('home',{username : req.session.userName});*/
         console.log('has session');
+        res.send(api.response())
     }else{
         res.redirect('/index.html#/login');
         console.log('no session');
     }
 })
+
 
 app.get('/',function (req,res) {
     console.log('hello');
@@ -49,14 +61,14 @@ app.get('/userInfo',function (req,res) {
     end.data={use:'maik',age:'18'}
     setTimeout(()=>{
         res.send(JSON.stringify(end))
-    },0)
+    },1000)
 })
 app.get('/userList',function (req,res) {
     var end=api.response();
     end.data={use:'maik',age:'18'}
     setTimeout(()=>{
         res.send(JSON.stringify(end))
-    },0)
+    },3000)
 })
 
 app.post('/login',function (req,res) {
@@ -66,6 +78,7 @@ app.post('/login',function (req,res) {
         var end=api.response();
         end.msg="登陆成功";
         end.data=req.body
+        end.action=1
         res.send(JSON.stringify(end));
     }else{
         var end=api.response();
