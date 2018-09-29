@@ -6,17 +6,8 @@ const express=require('express');
 const session=require('express-session');
 const bodyParser=require('body-parser');
 const serverConfig=require(path.resolve('./config/serverConfig.js'));
-let api=require(path.resolve('./api/index.js'));
+let api=require(path.resolve('./api/api.js'));
 let app=express();
-
-let router=express.Router();
-//全局处理
-router.use(function timeLog (req, res, next) {
-    console.log('Time: ', Date.now())
-    next()
-})
-app.use('*',router);
-
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -33,9 +24,20 @@ app.use(session({
     },
 }));
 
-/*app.get('*',function (req,res) {
-    console.log('get *');
-})*/
+let router=express.Router();
+//全局处理
+router.use(function timeLog (req, res, next) {
+    console.log('Time: ', Date.now())
+    next()
+})
+app.use('*',router);
+
+// 引入接口路由 开始
+const systemRouter=require('./api/system')
+app.use('/system',systemRouter)
+const userRouter=require('./api/user')
+app.use('/user',userRouter)
+// 引入接口路由 结束
 
 
 app.get('/server',function (req,res) {
@@ -71,24 +73,7 @@ app.get('/userList',function (req,res) {
     },3000)
 })
 
-app.post('/login',function (req,res) {
 
-    if(req.body.username == 'admin' && req.body.password == '123456'){
-        req.session.userName = req.body.username; // 登录成功，设置 session
-        var end=api.response();
-        end.msg="登陆成功";
-        end.data=req.body
-        end.action=1
-        res.send(JSON.stringify(end));
-    }else{
-        var end=api.response();
-        end.msg="账号名或密码错误！";
-        end.state='20000'
-        res.send(JSON.stringify(end));
-    }
-
-
-})
 
 app.listen(serverConfig.port,function () {
     console.log('server is running at '+serverConfig.port);
